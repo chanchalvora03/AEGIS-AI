@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1788450937371",
+    "task": "Explain whether AI can learn from its own mistakes",
+    "failureType": "FACTUAL_ERROR",
+    "rootCause": "Unsupported or unverified information",
+    "repairStrategy": "Add VerificationAgent before final evaluation",
+    "resolved": true,
+    "timestamp": "2026-09-03T15:55:37.371Z"
+  },
+  {
+    "id": "1788451259463",
+    "task": "Who discovered penicillin and what are the facts about the discovery?",
+    "failureType": "FACTUAL_ERROR",
+    "rootCause": "The response contains unsupported or unverified factual information",
+    "repairStrategy": "Add VerificationAgent to verify factual claims",
+    "resolved": true,
+    "timestamp": "2026-09-03T16:00:59.463Z"
+  },
+  {
+    "id": "1788451362200",
+    "task": "Solve this logic problem step by step",
+    "failureType": "REASONING_ERROR",
+    "rootCause": "The task requires additional reasoning validation",
+    "repairStrategy": "Add ReasoningAgent to validate the solution",
+    "resolved": true,
+    "timestamp": "2026-09-03T16:02:42.200Z"
+  },
+  {
+    "id": "1788451376767",
+    "task": "Write a short welcome message for AEGIS",
+    "failureType": null,
+    "rootCause": null,
+    "repairStrategy": null,
+    "resolved": true,
+    "timestamp": "2026-09-03T16:02:56.767Z"
+  },
+  {
+    "id": "1788451914852",
+    "task": "Who discovered penicillin and what are the facts about the discovery?",
+    "failureType": "FACTUAL_ERROR",
+    "rootCause": "The response contains unsupported or unverified factual information",
+    "repairStrategy": "Add VerificationAgent to verify factual claims",
+    "resolved": true,
+    "timestamp": "2026-09-03T16:11:54.852Z"
+  },
+  {
+    "id": "1788451956611",
+    "task": "Solve this logic problem step by step",
+    "failureType": "REASONING_ERROR",
+    "rootCause": "The task requires additional reasoning validation",
+    "repairStrategy": "Add ReasoningAgent to validate the solution",
+    "resolved": true,
+    "timestamp": "2026-09-03T16:12:36.611Z"
+  }
+]
