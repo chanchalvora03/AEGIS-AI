@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #08090e;
+    color: #f1f5f9;
+    overflow-x: hidden;
+  }
+}
+
+/* Modern AI Lab Glassmorphic Design System (Apple / Linear Aesthetic) */
+.lab-glass {
+  background: rgba(17, 20, 29, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.lab-glass-subtle {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.lab-glass-rose {
+  background: rgba(244, 63, 94, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(244, 63, 94, 0.22);
+  box-shadow: 0 16px 36px -8px rgba(244, 63, 94, 0.12), inset 0 1px 0 0 rgba(244, 63, 94, 0.15);
+}
+
+.lab-glass-emerald {
+  background: rgba(16, 185, 129, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  box-shadow: 0 16px 36px -8px rgba(16, 185, 129, 0.12), inset 0 1px 0 0 rgba(16, 185, 129, 0.15);
+}
+
+.lab-glass-cyan {
+  background: rgba(56, 189, 248, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  box-shadow: 0 16px 36px -8px rgba(56, 189, 248, 0.14), inset 0 1px 0 0 rgba(56, 189, 248, 0.2);
+}
+
+.lab-ambient-mesh {
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 15% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 65%, rgba(139, 92, 246, 0.07) 0%, transparent 50%);
+}
+
+.lab-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Subtle Shimmer */
+@keyframes shimmer-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer-line {
+  animation: shimmer-line 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Refined Minimalist Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}

@@ -1,0 +1,29 @@
+/* Custom AEGIS component animations & utilities */
+@keyframes energy-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.animate-energy-pulse {
+  animation: energy-pulse 2s ease-in-out infinite;
+}
+
+@keyframes laser-flow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.laser-line {
+  stroke-dasharray: 8 6;
+  animation: laser-flow 1.5s linear infinite;
+}
