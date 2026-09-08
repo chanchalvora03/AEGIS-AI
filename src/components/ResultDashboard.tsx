@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  CheckCircle2, 
-  AlertTriangle, 
-  ChevronDown, 
-  ChevronUp, 
-  Brain, 
-  ShieldCheck, 
-  Bot, 
-  Wrench, 
+import {
+  CheckCircle2,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Brain,
+  ShieldCheck,
+  Bot,
+  Wrench,
   RotateCcw,
-  Check
+  Check,
 } from 'lucide-react';
 import type { AegisResponse } from '../types/aegis';
 import { SelfEvolutionHero } from './SelfEvolutionHero';
@@ -42,15 +42,28 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
     resolved,
   } = response;
 
+  // Normalize final evaluation because the backend may return
+  // either a string or an evaluation object.
+  const evaluationText =
+    typeof finalEvaluation === 'string'
+      ? finalEvaluation
+      : finalEvaluation?.failureType || '';
+
   // Derive top-level status
   let topStatusText = '✓ RESOLVED';
-  let topStatusColor = 'text-emerald-300 border-emerald-400/30 bg-emerald-950/40';
+  let topStatusColor =
+    'text-emerald-300 border-emerald-400/30 bg-emerald-950/40';
   let TopIcon = CheckCircle2;
 
   if (resolved) {
-    if (finalEvaluation?.toUpperCase().includes('PASS') || finalEvaluation?.toUpperCase().includes('VERIF')) {
+    if (
+      evaluationText.toUpperCase().includes('PASS') ||
+      evaluationText.toUpperCase().includes('VERIF') ||
+      evaluationText.toUpperCase().includes('NO_ERROR')
+    ) {
       topStatusText = '✓ VERIFIED & RESOLVED';
-      topStatusColor = 'text-emerald-300 border-emerald-400/30 bg-emerald-950/40';
+      topStatusColor =
+        'text-emerald-300 border-emerald-400/30 bg-emerald-950/40';
       TopIcon = CheckCircle2;
     } else {
       topStatusText = '✓ RESOLVED';
@@ -64,26 +77,43 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
   // Similarity metric extraction
   let similarityPercent = '65.8%';
   let rawNumericSim = 65.8;
-  if (memoryMatch && typeof memoryMatch === 'object' && 'similarity' in memoryMatch) {
+
+  if (
+    memoryMatch &&
+    typeof memoryMatch === 'object' &&
+    'similarity' in memoryMatch
+  ) {
     const rawSim = Number(memoryMatch.similarity);
+
     if (!isNaN(rawSim)) {
       rawNumericSim = rawSim <= 1 ? rawSim * 100 : rawSim;
       similarityPercent = `${rawNumericSim.toFixed(1)}%`;
     }
   }
 
+  // Display-friendly final evaluation
+  const displayEvaluation =
+    typeof finalEvaluation === 'string'
+      ? finalEvaluation
+      : finalEvaluation?.failureType || 'PASSED';
+
   return (
     <div className="relative z-10 w-full max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6 flex flex-col gap-6 animate-fadeIn">
       {/* 3. COMPACT TOP STATUS HEADER */}
       <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl lab-glass">
         <div className="flex flex-wrap items-center gap-3">
-          <div className={`px-3.5 py-1.5 rounded-full border text-xs font-mono font-semibold tracking-wider uppercase flex items-center gap-2 ${topStatusColor}`}>
+          <div
+            className={`px-3.5 py-1.5 rounded-full border text-xs font-mono font-semibold tracking-wider uppercase flex items-center gap-2 ${topStatusColor}`}
+          >
             <TopIcon className="w-3.5 h-3.5" />
             <span>{topStatusText}</span>
           </div>
 
           <span className="text-xs font-mono text-slate-400">
-            SESSION // <span className="text-slate-200">{response.sessionId || 'AEGIS-LAB'}</span>
+            SESSION //{' '}
+            <span className="text-slate-200">
+              {response.sessionId || 'AEGIS-LAB'}
+            </span>
           </span>
         </div>
 
@@ -101,13 +131,14 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
         <span className="text-[10px] font-mono text-slate-400 bg-white/[0.04] border border-white/10 px-2 py-0.5 rounded uppercase tracking-wider shrink-0 mt-0.5 sm:mt-0 font-medium">
           TASK
         </span>
+
         <p className="text-sm sm:text-base font-medium text-slate-200 truncate">
           "{task}"
         </p>
       </div>
 
       {/* =========================================================================
-          BRANCH A: NO-FAILURE EXPERIENCE (Section 11)
+          BRANCH A: NO-FAILURE EXPERIENCE
           ========================================================================= */}
       {!failureDetected ? (
         <div className="flex flex-col gap-6 my-2">
@@ -127,37 +158,45 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
               <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-slate-200 font-mono text-xs uppercase font-medium">
                 GENERATOR
               </div>
+
               <span className="text-slate-600 font-mono">→</span>
+
               <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-slate-200 font-mono text-xs uppercase font-medium">
                 EVALUATOR
               </div>
+
               <span className="text-emerald-400 font-mono">→</span>
+
               <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-950/60 border border-emerald-400/40 text-emerald-300 font-mono text-xs uppercase font-medium flex items-center justify-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
                 <span>NO FAILURE</span>
               </div>
+
               <span className="text-sky-400 font-mono">→</span>
+
               <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sky-950/40 border border-sky-400/30 text-sky-200 font-mono text-xs uppercase font-medium">
                 FINAL ANSWER
               </div>
             </div>
           </div>
 
-          {/* INITIAL RESPONSE (Compact) */}
+          {/* INITIAL RESPONSE */}
           <div className="w-full lab-glass rounded-2xl p-5">
             <div className="text-[10px] font-mono tracking-wider text-slate-400 uppercase font-semibold mb-2">
               INITIAL RESPONSE
             </div>
+
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
               {initialAnswer}
             </p>
           </div>
 
-          {/* 9. FINAL ANSWER — SECOND HERO SECTION */}
+          {/* FINAL ANSWER */}
           <div className="w-full lab-glass rounded-3xl p-6 sm:p-10 border border-emerald-400/40 relative overflow-hidden bg-gradient-to-b from-[#0e161c] to-[#090e16]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-2.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+
                 <h4 className="text-sm font-mono tracking-wider text-emerald-300 uppercase font-semibold">
                   FINAL ANSWER
                 </h4>
@@ -173,13 +212,17 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
               {finalAnswer}
             </div>
 
-            {/* 10. FINAL EVALUATION (Compact) */}
+            {/* FINAL EVALUATION */}
             <div className="mt-6 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-slate-400">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span className="uppercase tracking-wider">FINAL CHECK:</span>
+
+                <span className="uppercase tracking-wider">
+                  FINAL CHECK:
+                </span>
+
                 <span className="text-emerald-300 font-semibold uppercase flex items-center gap-1">
-                  ✓ {finalEvaluation || 'PASSED'}
+                  ✓ {displayEvaluation}
                 </span>
               </div>
 
@@ -194,32 +237,35 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
            BRANCH B: FAILURE DETECTED -> SELF-EVOLUTION -> REPAIR -> FINAL ANSWER
            ========================================================================= */
         <div className="flex flex-col gap-6">
-          {/* TWO COLUMN GRID: INITIAL ANSWER vs FAILURE ANALYSIS */}
+          {/* INITIAL ANSWER + FAILURE ANALYSIS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {/* 4. INITIAL ANSWER (Compact) */}
+            {/* INITIAL ANSWER */}
             <div className="lab-glass rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[11px] font-mono tracking-wider text-slate-400 uppercase font-semibold">
                     INITIAL RESPONSE
                   </span>
+
                   <span className="px-2.5 py-0.5 rounded-md bg-rose-950/60 border border-rose-500/40 text-[10px] font-mono font-bold text-rose-300 uppercase flex items-center gap-1.5">
                     <AlertTriangle className="w-3 h-3 text-rose-400" />
                     ERROR DETECTED
                   </span>
                 </div>
+
                 <div className="bg-black/20 p-3.5 rounded-xl border border-white/5">
                   <p className="text-slate-300 text-sm leading-relaxed italic">
                     "{initialAnswer}"
                   </p>
                 </div>
               </div>
+
               <div className="mt-3 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
                 Unverified baseline output
               </div>
             </div>
 
-            {/* 5. FAILURE CARD (Visually Strong) */}
+            {/* FAILURE CARD */}
             <div className="lab-glass-rose rounded-2xl p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -228,6 +274,7 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                   <span className="text-[10px] font-mono tracking-wider text-rose-300/80 uppercase font-semibold">
                     FAILURE TYPE
                   </span>
+
                   <span className="w-2 h-2 rounded-full bg-rose-400" />
                 </div>
 
@@ -239,6 +286,7 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                   <span className="text-rose-400 block mb-1 uppercase font-bold text-[10px] tracking-wider">
                     ROOT CAUSE:
                   </span>
+
                   {rootCause || 'Incorrect information detected.'}
                 </div>
               </div>
@@ -249,15 +297,15 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
             </div>
           </div>
 
-          {/* 6. THE HERO FEATURE — SELF-EVOLVING ARCHITECTURE */}
+          {/* SELF-EVOLVING ARCHITECTURE */}
           <SelfEvolutionHero
             architectureBefore={architectureBefore}
             architectureAfter={architectureAfter}
           />
 
-          {/* TWO COLUMN GRID: MEMORY & REPAIR */}
+          {/* MEMORY + REPAIR */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {/* 7. MEMORY CARD (Small & Elegant) */}
+            {/* MEMORY CARD */}
             <div className="lab-glass rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -284,28 +332,42 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                       <span className="text-xs font-mono text-slate-400 uppercase font-medium tracking-wider">
                         SIMILARITY
                       </span>
+
                       <span className="text-2xl font-display font-bold text-indigo-300">
                         {similarityPercent}
                       </span>
                     </div>
 
-                    {/* Progress bar */}
                     <div className="w-full bg-white/[0.05] rounded-full h-1.5 mb-3 overflow-hidden border border-white/[0.06]">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-indigo-500 to-sky-400 rounded-full"
-                        style={{ width: `${Math.min(Math.max(rawNumericSim, 10), 100)}%` }}
+                        style={{
+                          width: `${Math.min(
+                            Math.max(rawNumericSim, 10),
+                            100
+                          )}%`,
+                        }}
                       />
                     </div>
 
                     {memoryMatch && (
                       <button
-                        onClick={() => setIsMemoryExpanded(!isMemoryExpanded)}
+                        onClick={() =>
+                          setIsMemoryExpanded(!isMemoryExpanded)
+                        }
                         className="mt-1 text-xs font-mono text-sky-400 hover:text-sky-300 flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <span className="font-medium">
-                          {isMemoryExpanded ? 'Collapse Match Details' : 'Expand Memory Match'}
+                          {isMemoryExpanded
+                            ? 'Collapse Match Details'
+                            : 'Expand Memory Match'}
                         </span>
-                        {isMemoryExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+
+                        {isMemoryExpanded ? (
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     )}
 
@@ -315,8 +377,14 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                           <p>{memoryMatch}</p>
                         ) : (
                           Object.entries(memoryMatch).map(([key, val]) => (
-                            <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                              <span className="text-slate-400 uppercase text-[10px] font-medium">{key}:</span>
+                            <div
+                              key={key}
+                              className="flex flex-col sm:flex-row sm:justify-between gap-1"
+                            >
+                              <span className="text-slate-400 uppercase text-[10px] font-medium">
+                                {key}:
+                              </span>
+
                               <span className="text-slate-200 truncate max-w-xs font-medium">
                                 {String(val)}
                               </span>
@@ -328,13 +396,14 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                   </div>
                 ) : (
                   <p className="text-xs font-mono text-slate-500 italic py-2">
-                    No matching episodic failure pattern found. Registering experience vector.
+                    No matching episodic failure pattern found. Registering
+                    experience vector.
                   </p>
                 )}
               </div>
             </div>
 
-            {/* 8. REPAIR CARD (Compact) */}
+            {/* REPAIR CARD */}
             <div className="lab-glass rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -342,6 +411,7 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                     <Wrench className="w-4 h-4 text-sky-400" />
                     REPAIR
                   </span>
+
                   <span className="w-2 h-2 rounded-full bg-sky-400" />
                 </div>
 
@@ -350,6 +420,7 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                     <span className="text-[10px] font-mono text-slate-400 uppercase block mb-1 font-medium tracking-wider">
                       AGENT
                     </span>
+
                     <div className="text-sm font-mono font-semibold text-sky-300 flex items-center gap-2">
                       <Bot className="w-4 h-4 text-sky-400" />
                       <span>{agentUsed || 'VerificationAgent'}</span>
@@ -360,6 +431,7 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
                     <span className="text-[10px] font-mono text-slate-400 uppercase block mb-1 font-medium tracking-wider">
                       STRATEGY
                     </span>
+
                     <div className="text-sm font-mono font-medium text-slate-100">
                       {repairStrategy || 'Add VerificationAgent'}
                     </div>
@@ -369,11 +441,12 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
             </div>
           </div>
 
-          {/* 9. FINAL ANSWER — SECOND HERO SECTION */}
+          {/* FINAL ANSWER */}
           <div className="w-full lab-glass rounded-3xl p-6 sm:p-10 border border-white/15 relative overflow-hidden bg-gradient-to-b from-[#111624] via-[#0d121c] to-[#080b12] my-2 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.6)]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-2.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
+
                 <h3 className="text-sm sm:text-base font-mono tracking-wider text-slate-300 uppercase font-semibold">
                   FINAL ANSWER
                 </h3>
@@ -392,18 +465,21 @@ export const ResultDashboard: React.FC<ResultDashboardProps> = ({
               )}
             </div>
 
-            {/* Prominent High-Contrast Answer Content */}
             <div className="my-6 text-white text-xl sm:text-2xl md:text-3xl font-display font-medium leading-relaxed tracking-normal">
               {finalAnswer}
             </div>
 
-            {/* 10. FINAL EVALUATION (Compact Check) */}
+            {/* FINAL EVALUATION */}
             <div className="mt-8 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-slate-400">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-sky-400" />
-                <span className="uppercase tracking-wider text-slate-400 font-medium">FINAL CHECK:</span>
+
+                <span className="uppercase tracking-wider text-slate-400 font-medium">
+                  FINAL CHECK:
+                </span>
+
                 <span className="text-emerald-300 font-semibold uppercase flex items-center gap-1 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/20">
-                  ✓ {finalEvaluation || 'PASSED'}
+                  ✓ {displayEvaluation}
                 </span>
               </div>
 

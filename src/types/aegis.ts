@@ -26,7 +26,11 @@ export interface AegisResponse {
   repairStrategy?: string | null;
   agentUsed?: string | null;
   finalAnswer: string;
-  finalEvaluation: string;
+  finalEvaluation: {
+  	failureDetected: boolean;
+  	failureType: string;
+  	rootCause?: string | null;
+  } | string;
   resolved: boolean;
 }
 
