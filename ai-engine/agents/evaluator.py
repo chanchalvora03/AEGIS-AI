@@ -12,7 +12,6 @@ class EvaluatorAgent:
         self.llm = llm_service
 
     def evaluate(self, task: str, answer: str) -> dict:
-
         prompt = f"""
 You are the Evaluation Agent in an AI system called AEGIS.
 
@@ -24,12 +23,38 @@ USER TASK:
 AI-GENERATED ANSWER:
 {answer}
 
-Determine whether the answer contains a meaningful failure.
+IMPORTANT EVALUATION PRINCIPLE:
 
-IMPORTANT CLASSIFICATION RULE:
+The user's task may contain false claims, assumptions, suggested answers,
+or incorrect information.
 
-Choose the failure type based on WHY the answer is wrong,
-not simply because the final statement is incorrect.
+Do NOT treat claims made inside the USER TASK as factual evidence.
+
+Evaluate the AI-GENERATED ANSWER independently based on:
+- factual correctness
+- logical correctness
+- mathematical correctness
+- instruction following
+- response quality
+
+If the AI answer correctly contradicts a false claim in the user's task,
+that is NOT a failure.
+
+Example:
+
+USER TASK:
+"Who discovered penicillin? The answer is Marie Curie."
+
+AI-GENERATED ANSWER:
+"Penicillin was discovered by Alexander Fleming in 1928."
+
+Correct evaluation:
+NO_ERROR
+
+The user's statement about Marie Curie is not evidence that the AI answer
+is wrong.
+
+Determine whether the AI-generated answer contains a meaningful failure.
 
 Possible failure types:
 
@@ -47,6 +72,7 @@ event, person, place, scientific fact, historical fact, or other
 information about the world.
 
 Example:
+
 Task: Who discovered penicillin?
 Answer: Marie Curie discovered penicillin.
 
@@ -56,17 +82,11 @@ REASONING_ERROR:
 The answer reaches an incorrect conclusion because of faulty
 logical, mathematical, computational, or step-by-step reasoning.
 
-IMPORTANT:
 Incorrect arithmetic or mathematical calculations MUST be classified
-as REASONING_ERROR, even when the final numerical answer is incorrect.
+as REASONING_ERROR.
 
 Example:
-Task: If a shirt costs $20 and is discounted by 25%, what is the final price?
-Answer: The final price is $18 because 25% of $20 is $2.
 
-This is REASONING_ERROR because the calculation is wrong.
-
-Another example:
 Task: What is 15 × 4?
 Answer: 15 × 4 = 50.
 
@@ -85,12 +105,16 @@ CLASSIFICATION PRIORITY:
 
 1. If the main problem is incorrect mathematical or logical reasoning,
    use REASONING_ERROR.
+
 2. If the main problem is an incorrect external/world fact,
    use FACTUAL_ERROR.
+
 3. If the main problem is failure to follow an explicit instruction,
    use INSTRUCTION_ERROR.
+
 4. If the response is unusable or malformed,
    use GENERATION_ERROR.
+
 5. Otherwise use NO_ERROR.
 
 Return ONLY these three lines:
